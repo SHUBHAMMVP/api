@@ -4,19 +4,28 @@ const Sequelize = require("sequelize");
 async function sequelizeConnect(fastify, opts, next) {
   //Initialize sequelize object
   const sequelize = new Sequelize({
-    dialect: "mysql",
-    database: "world",
-    username: "root",
-    password: "Admin123#",
+    dialect: process.env.DATABASE_DIALECT,
+    database: process.env.DATABASE_NAME,
+    username: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
     options: {
-      host: "localhost",
-      port: "3006",
+      host: process.env.DATABASE_HOST,
+      port: process.env.DATABASE_PORT,
     },
   });
 
+  //Test database connection
+  try {
+    await sequelize.authenticate();
+  } catch (err) {
+    console.error("Unable to connect to the database:", err);
+    //Fatal exception, exit process
+    process.exit(1);
+  }
+
   //Attach models
   sequelize.models = {
-    Country: require("../src/models/country")(sequelize, Sequelize),
+    Country: require("../models/country")(sequelize, Sequelize),
   };
 
   //Decorate sequelize object to make it avaialble via plugin
