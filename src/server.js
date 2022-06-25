@@ -5,7 +5,7 @@ require("dotenv").config({ path: path.resolve(__dirname, "../.env.local") });
 // Init fastify app
 const app = require("fastify")({ logger: true });
 
-// MYSQL connection
+// MYSQL connection. Provides sequelize connection object.
 app.register(require("../plugins/sequelizeConnect"));
 
 // CORS settings

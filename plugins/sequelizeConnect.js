@@ -2,6 +2,7 @@ const fastifyPlugin = require("fastify-plugin");
 const Sequelize = require("sequelize");
 
 async function sequelizeConnect(fastify, opts, next) {
+  //Initialize sequelize object
   const sequelize = new Sequelize({
     dialect: "mysql",
     database: "world",
@@ -13,10 +14,12 @@ async function sequelizeConnect(fastify, opts, next) {
     },
   });
 
+  //Attach models
   sequelize.models = {
     Country: require("../src/models/country")(sequelize, Sequelize),
   };
 
+  //Decorate sequelize object to make it avaialble via plugin
   fastify.decorate("db", sequelize);
 
   // close sequelize database connection
@@ -25,6 +28,7 @@ async function sequelizeConnect(fastify, opts, next) {
   next();
 }
 
+//Export sequelize connection plugin object
 module.exports = fastifyPlugin(sequelizeConnect, {
   fastify: "4.x",
   name: "sequelizeConnect",
