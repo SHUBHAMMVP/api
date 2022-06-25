@@ -11,15 +11,15 @@ const schema = {
   },
 };
 
-const handler = async (req, res) => {
-  try {
-    return res.send({ Data: req.params.id });
-  } catch (err) {
-    return res.status(500).send({ error: "message" });
-  }
-};
-
-module.exports = function (app, opts, next) {
-  app.get("/:id", { schema }, handler);
-  next();
+module.exports = async function (app, opts) {
+  app.get("/:id", { schema }, async (req, res) => {
+    try {
+      const Country = app.db.models.Country;
+      const countries = await Country.findAll();
+      return res.send({ Data: countries });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send({ error: err });
+    }
+  });
 };
